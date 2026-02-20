@@ -1,5 +1,9 @@
 import './style.css';
 import { marked } from 'marked';
+import markedAlert from 'marked-alert';
+
+marked.use(markedAlert());
+
 import fm from 'front-matter';
 import siteConfig from './content/site.json';
 

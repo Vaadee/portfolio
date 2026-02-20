@@ -62,4 +62,59 @@
   .prose code {
     @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-medium before:content-none after:content-none;
   }
+  .markdown-alert {
+    @apply px-4 py-3 border-l-4 rounded-r-sm my-5 text-sm;
+  }
+  .markdown-alert > *:first-child {
+    @apply mt-0;
+  }
+  .markdown-alert > *:last-child {
+    @apply mb-0;
+  }
+  .markdown-alert-title {
+    @apply flex items-center font-medium mb-2;
+  }
+  .markdown-alert-title svg {
+    @apply shrink-0 mr-2 w-4 h-4 fill-current;
+  }
+
+  /* Note (blue) */
+  .markdown-alert-note {
+    @apply border-blue-500 bg-blue-50/50 dark:bg-blue-500/10 text-gray-800 dark:text-gray-300;
+  }
+  .markdown-alert-note .markdown-alert-title {
+    @apply text-blue-700 dark:text-blue-400;
+  }
+
+  /* Tip (green) */
+  .markdown-alert-tip {
+    @apply border-green-500 bg-green-50/50 dark:bg-green-500/10 text-gray-800 dark:text-gray-300;
+  }
+  .markdown-alert-tip .markdown-alert-title {
+    @apply text-green-700 dark:text-green-400;
+  }
+
+  /* Important (purple) */
+  .markdown-alert-important {
+    @apply border-purple-500 bg-purple-50/50 dark:bg-purple-500/10 text-gray-800 dark:text-gray-300;
+  }
+  .markdown-alert-important .markdown-alert-title {
+    @apply text-purple-700 dark:text-purple-400;
+  }
+
+  /* Warning (orange) */
+  .markdown-alert-warning {
+    @apply border-orange-500 bg-orange-50/50 dark:bg-orange-500/10 text-gray-800 dark:text-gray-300;
+  }
+  .markdown-alert-warning .markdown-alert-title {
+    @apply text-orange-700 dark:text-orange-400;
+  }
+
+  /* Caution (red) */
+  .markdown-alert-caution {
+    @apply border-red-500 bg-red-50/50 dark:bg-red-500/10 text-gray-800 dark:text-gray-300;
+  }
+  .markdown-alert-caution .markdown-alert-title {
+    @apply text-red-700 dark:text-red-400;
+  }
 }

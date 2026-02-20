@@ -28,3 +28,12 @@ Unlike traditional ML models where accuracy is easy to measure, evaluating gener
 | **Monitoring** | Basic console logging | Distributed tracing (LangSmith/Arize), cost tracking |
 | **Evaluation** | Manual "vibe check" | Automated LLM-as-a-judge, regression testing suites |
 
+
+
+> [!NOTE]
+> This is a helpful tip for other GenAI engineers.
+
+> [!WARNING]
+> Don't forget to set your S3 bucket to private!
+
+

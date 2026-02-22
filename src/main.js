@@ -44,21 +44,67 @@ async function loadContent() {
 // UI Components
 // ----------------------------------------------------
 
+const NavTabs = (currentPath) => `
+  <div class="mb-12 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center w-full">
+    <nav>
+      <ul class="flex space-x-8 -mb-px text-sm font-medium text-gray-500 dark:text-gray-400">
+        <li>
+          <a href="/" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/' ? 'aria-current="page"' : ''}>Home</a>
+        </li>
+        <li>
+          <a href="/projects" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/projects' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/projects' ? 'aria-current="page"' : ''}>Projects</a>
+        </li>
+        <li>
+          <a href="/writing" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'aria-current="page"' : ''}>Writing</a>
+        </li>
+      </ul>
+    </nav>
+    <button id="theme-toggle"
+      class="p-2 -mt-4 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400"
+      aria-label="Toggle Dark Mode">
+      <svg id="theme-toggle-light-icon" aria-hidden="true" class="hidden w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+      <svg id="theme-toggle-dark-icon" aria-hidden="true" class="hidden w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+    </button>
+  </div>
+`;
+
 const Header = (data) => `
-  <header class="mb-16">
+  <header class="mb-8 text-center md:text-left">
     <h1 class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-gray-100 mb-2">${data.name}</h1>
     <h2 class="text-lg text-gray-500 dark:text-gray-400 font-medium">${data.role}</h2>
-    <div class="mt-6 text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl prose prose-gray prose-p:mt-0 max-w-none dark:prose-invert">
+    <div class="mt-6 text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl prose prose-gray prose-p:mt-0 max-w-none dark:prose-invert mx-auto md:mx-0">
       ${marked.parse(data.content)}
     </div>
   </header>
 `;
 
+const HomeView = (headerData) => `
+  <div class="flex-1 flex flex-col justify-center animate-fade-in w-full pb-24">
+    <div class="flex flex-col-reverse md:flex-row gap-12 items-center justify-between">
+      <div class="flex-1 w-full max-w-3xl">
+        ${Header(headerData)}
+      </div>
+      <div class="w-full md:w-1/3 shrink-0 flex justify-center md:justify-end">
+        <!-- Placeholder for caricature -->
+        <div class="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gray-50 dark:bg-gray-800/40 flex items-center justify-center text-gray-400 dark:text-gray-500 overflow-hidden border border-gray-100 dark:border-gray-800 backdrop-blur-sm transition-all hover:shadow-sm">
+          ${siteConfig.profileImage ? `
+            <img src="${siteConfig.profileImage}" alt="Profile/Caricature" class="w-full h-full object-cover" />
+          ` : `
+            <div class="text-center p-4">
+              <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span class="text-xs uppercase tracking-widest font-medium block">Caricature</span>
+            </div>
+          `}
+        </div>
+      </div>
+    </div>
+  </div>
+`;
+
 const ProjectsSection = (projects) => `
-  <section class="mb-16">
-    <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6">${siteConfig.projectsTitle || 'Selected Work'}</h3>
+  <section class="animate-fade-in mb-16 max-w-3xl">
     <ul class="space-y-8">
-      ${projects.map(p => `
+      ${projects.map((p) => `
         <li class="group">
           <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">${p.title}</h4>
           <div class="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed prose prose-gray prose-p:my-0 max-w-none dark:prose-invert">
@@ -71,11 +117,10 @@ const ProjectsSection = (projects) => `
 `;
 
 const BlogListSection = (posts) => `
-  <section>
-    <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-6">${siteConfig.writingTitle || 'Writing'}</h3>
+  <section class="animate-fade-in mb-16 max-w-3xl">
     <div class="space-y-10">
-      ${posts.map(post => {
-  const url = post.externalUrl ? post.externalUrl : "/post/" + post.slug;
+      ${posts.map((post) => {
+  const url = post.externalUrl ? post.externalUrl : '/post/' + post.slug;
   const target = post.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
   const externalIcon = post.externalUrl ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>' : '';
   const dateStr = new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
@@ -98,10 +143,10 @@ const BlogListSection = (posts) => `
 `;
 
 const PostView = (post) => `
-  <article>
-    <a href="/" class="inline-flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-8 items-center gap-2">
+  <article class="animate-fade-in max-w-3xl">
+    <a href="/writing" class="inline-flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-8 items-center gap-2">
       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      Back to Home
+      Back to Writing
     </a>
     <header class="mb-10">
       <time class="block text-sm text-gray-500 dark:text-gray-400 mb-3">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
@@ -113,12 +158,40 @@ const PostView = (post) => `
   </article>
 `;
 
+const getSocialIcon = (platform) => {
+  if (platform === 'LinkedIn') {
+    return `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" /></svg>`;
+  }
+  if (platform === 'GitHub') {
+    return `<svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" /></svg>`;
+  }
+  return '';
+};
+
+const Footer = (config) => `
+  <footer class="mt-auto border-t border-gray-200 dark:border-gray-800 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+    <p>&copy; ${new Date().getFullYear()} ${config.authorName || 'Author'}. All rights reserved.</p>
+    <div class="flex space-x-6 mt-4 md:mt-0">
+      ${(config.socialLinks || []).map(link => `
+        <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
+          <span class="sr-only">${link.platform}</span>
+          ${getSocialIcon(link.platform)}
+        </a>
+      `).join('')}
+    </div>
+  </footer>
+`;
+
 // ----------------------------------------------------
 // Router
 // ----------------------------------------------------
 
 let isContentLoaded = false;
 
+/**
+ * Main application render function.
+ * Handles view switching based on history API to avoid full page reloads.
+ */
 async function render() {
   const app = document.getElementById('app');
   const path = window.location.pathname;
@@ -128,22 +201,35 @@ async function render() {
     isContentLoaded = true;
   }
 
+  let content = '';
+
   if (path.startsWith('/post/')) {
     const slug = path.split('/post/')[1];
-    const post = postsList.find(p => p.slug === slug);
+    const post = postsList.find((p) => p.slug === slug);
     if (post) {
-      app.innerHTML = PostView(post);
-      window.scrollTo(0, 0);
-      return;
+      content = PostView(post);
+    } else {
+      content = '<div class="text-center py-20 text-gray-500">Post not found.</div>';
     }
+  } else if (path === '/projects') {
+    content = ProjectsSection(projectsList);
+  } else if (path === '/writing') {
+    content = BlogListSection(postsList);
+  } else {
+    // Default to Home
+    content = HomeView(headerData);
   }
 
-  // Default to Home
   app.innerHTML = `
-    ${Header(headerData)}
-    ${ProjectsSection(projectsList)}
-    ${BlogListSection(postsList)}
+    ${NavTabs(path)}
+    ${content}
+    ${Footer(siteConfig)}
   `;
+  updateThemeIcon();
+
+  if (!path.startsWith('/post/')) {
+    window.scrollTo(0, 0);
+  }
 }
 
 // Simple client-side navigation
@@ -160,47 +246,34 @@ document.addEventListener('click', e => {
     e.preventDefault();
     window.navigateTo(link.getAttribute('href'));
   }
+
+  const themeBtn = e.target.closest('#theme-toggle');
+  if (themeBtn) {
+    if (document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    updateThemeIcon();
+  }
 });
 
-// Initial render
-render();
-
-// Toggle functional setup
-function initThemeToggle() {
+function updateThemeIcon() {
   const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
   const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
-  const themeToggleBtn = document.getElementById('theme-toggle');
 
-  if (!themeToggleBtn) return;
+  if (!themeToggleDarkIcon || !themeToggleLightIcon) return;
 
   if (document.documentElement.classList.contains('dark')) {
     themeToggleLightIcon.classList.remove('hidden');
+    themeToggleDarkIcon.classList.add('hidden');
   } else {
     themeToggleDarkIcon.classList.remove('hidden');
+    themeToggleLightIcon.classList.add('hidden');
   }
-
-  themeToggleBtn.addEventListener('click', function () {
-    themeToggleDarkIcon.classList.toggle('hidden');
-    themeToggleLightIcon.classList.toggle('hidden');
-
-    if (localStorage.getItem('theme')) {
-      if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-    } else {
-      if (document.documentElement.classList.contains('dark')) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      }
-    }
-  });
 }
 
-initThemeToggle();
+// Initial render
+render();

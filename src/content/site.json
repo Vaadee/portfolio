@@ -1,5 +1,18 @@
 {
     "siteTitle": "Vaadeendra | ML Architect",
     "projectsTitle": "Selected Work",
-    "writingTitle": "Writing"
+    "writingTitle": "Writing",
+    "profileImage": "/vaadee.png",
+    "authorName": "Vaadeendra",
+    "authorUrl": "https://vaadeendra.com",
+    "socialLinks": [
+        {
+            "platform": "LinkedIn",
+            "url": "https://linkedin.com/in/vaadeendra"
+        },
+        {
+            "platform": "GitHub",
+            "url": "https://github.com/vaadee"
+        }
+    ]
 }

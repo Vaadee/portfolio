@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", "San Francisco", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased selection:bg-gray-200 dark:selection:bg-gray-800 dark:selection:text-white transition-colors duration-200;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+
+  .prose {
+    --tw-prose-body: var(--tw-colors-gray-800);
+    --tw-prose-headings: var(--tw-colors-black);
+    --tw-prose-lead: var(--tw-colors-gray-600);
+    --tw-prose-links: var(--tw-colors-gray-900);
+    --tw-prose-bold: var(--tw-colors-black);
+    --tw-prose-counters: var(--tw-colors-gray-500);
+    --tw-prose-bullets: var(--tw-colors-gray-300);
+    --tw-prose-hr: var(--tw-colors-gray-200);
+    --tw-prose-quotes: var(--tw-colors-gray-900);
+    --tw-prose-quote-borders: var(--tw-colors-gray-200);
+    --tw-prose-captions: var(--tw-colors-gray-500);
+    --tw-prose-code: var(--tw-colors-gray-900);
+    --tw-prose-pre-code: var(--tw-colors-gray-200);
+    --tw-prose-pre-bg: var(--tw-colors-gray-800);
+    --tw-prose-th-borders: var(--tw-colors-gray-300);
+    --tw-prose-td-borders: var(--tw-colors-gray-200);
+  }
+
+  .dark .prose {
+    --tw-prose-body: var(--tw-colors-gray-300);
+    --tw-prose-headings: var(--tw-colors-white);
+    --tw-prose-lead: var(--tw-colors-gray-400);
+    --tw-prose-links: var(--tw-colors-white);
+    --tw-prose-bold: var(--tw-colors-white);
+    --tw-prose-counters: var(--tw-colors-gray-400);
+    --tw-prose-bullets: var(--tw-colors-gray-600);
+    --tw-prose-hr: var(--tw-colors-gray-800);
+    --tw-prose-quotes: var(--tw-colors-gray-100);
+    --tw-prose-quote-borders: var(--tw-colors-gray-700);
+    --tw-prose-captions: var(--tw-colors-gray-400);
+    --tw-prose-code: var(--tw-colors-white);
+    --tw-prose-pre-code: var(--tw-colors-gray-300);
+    --tw-prose-pre-bg: rgb(0 0 0 / 50%);
+    --tw-prose-th-borders: var(--tw-colors-gray-600);
+    --tw-prose-td-borders: var(--tw-colors-gray-700);
+  }
+
+  .prose a {
+    @apply underline decoration-gray-300 dark:decoration-gray-600 underline-offset-4 hover:decoration-gray-900 dark:hover:decoration-gray-300 transition-colors duration-200;
+  }
+
+  .prose blockquote {
+    @apply border-l-2 border-gray-300 dark:border-gray-700 pl-4 italic font-normal text-gray-700 dark:text-gray-300 bg-transparent;
+  }
+
+  .prose code {
+    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm font-medium before:content-none after:content-none;
+  }
+
+  .markdown-alert {
+    @apply px-4 py-3 border-l-4 rounded-r-sm my-5 text-sm;
+  }
+
+  .markdown-alert>*:first-child {
+    @apply mt-0;
+  }
+
+  .markdown-alert>*:last-child {
+    @apply mb-0;
+  }
+
+  .markdown-alert-title {
+    @apply flex items-center font-medium mb-2;
+  }
+
+  .markdown-alert-title svg {
+    @apply shrink-0 mr-2 w-4 h-4 fill-current;
+  }
+
+  /* Note (blue) */
+  .markdown-alert-note {
+    @apply border-blue-500 bg-blue-50/50 dark:bg-blue-500/10 text-gray-800 dark:text-gray-300;
+  }
+
+  .markdown-alert-note .markdown-alert-title {
+    @apply text-blue-700 dark:text-blue-400;
+  }
+
+  /* Tip (green) */
+  .markdown-alert-tip {
+    @apply border-green-500 bg-green-50/50 dark:bg-green-500/10 text-gray-800 dark:text-gray-300;
+  }
+
+  .markdown-alert-tip .markdown-alert-title {
+    @apply text-green-700 dark:text-green-400;
+  }
+
+  /* Important (purple) */
+  .markdown-alert-important {
+    @apply border-purple-500 bg-purple-50/50 dark:bg-purple-500/10 text-gray-800 dark:text-gray-300;
+  }
+
+  .markdown-alert-important .markdown-alert-title {
+    @apply text-purple-700 dark:text-purple-400;
+  }
+
+  /* Warning (orange) */
+  .markdown-alert-warning {
+    @apply border-orange-500 bg-orange-50/50 dark:bg-orange-500/10 text-gray-800 dark:text-gray-300;
+  }
+
+  .markdown-alert-warning .markdown-alert-title {
+    @apply text-orange-700 dark:text-orange-400;
+  }
+
+  /* Caution (red) */
+  .markdown-alert-caution {
+    @apply border-red-500 bg-red-50/50 dark:bg-red-500/10 text-gray-800 dark:text-gray-300;
+  }
+
+  .markdown-alert-caution .markdown-alert-title {
+    @apply text-red-700 dark:text-red-400;
+  }
+}

@@ -26,6 +26,7 @@ let headerData = {};
 let projectsList = [];
 let postsList = [];
 let activeTag = 'All';
+let visiblePostsCount = 10;
 
 async function loadContent() {
   document.title = siteConfig.siteTitle || 'Portfolio';
@@ -144,7 +145,7 @@ const HomeView = (headerData) => `
           ${
             siteConfig.profileImage
               ? `
-            <img src="${getPath(siteConfig.profileImage)}" alt="Profile/Caricature" class="w-full h-full object-cover" />
+            <img src="${getPath(siteConfig.profileImage)}" alt="Profile/Caricature" class="w-full h-full object-cover" fetchpriority="high" loading="eager" />
           `
               : `
             <div class="text-center p-4">
@@ -247,6 +248,7 @@ const BlogListSection = (posts) => {
         ${
           filteredPosts.length > 0
             ? filteredPosts
+                .slice(0, visiblePostsCount)
                 .map((post) => {
                   const url = post.externalUrl
                     ? post.externalUrl
@@ -300,6 +302,18 @@ const BlogListSection = (posts) => {
             : `<div class="text-center py-12 text-gray-500 dark:text-gray-400">No posts found with the tag "#${activeTag}".</div>`
         }
       </div>
+      
+      ${
+        filteredPosts.length > visiblePostsCount
+          ? `
+      <div class="mt-8 text-center animate-fade-in">
+        <button type="button" id="load-more-btn" class="px-6 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-full text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600">
+          Load More
+        </button>
+      </div>
+      `
+          : ''
+      }
   </section>
   `;
 };
@@ -439,7 +453,14 @@ document.addEventListener('click', (e) => {
   const tagBtn = e.target.closest('.tag-filter-btn');
   if (tagBtn) {
     activeTag = tagBtn.getAttribute('data-tag');
+    visiblePostsCount = 10; // Reset pagination when filter changes
     render(); // Re-render the UI with the updated filter
+  }
+
+  const loadMoreBtn = e.target.closest('#load-more-btn');
+  if (loadMoreBtn) {
+    visiblePostsCount += 10;
+    render();
   }
 });
 

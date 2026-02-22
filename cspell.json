@@ -16,7 +16,9 @@
     "Hyperopt",
     "hyperparameters",
     "Metaflow",
-    "Turnpoint"
+    "Turnpoint",
+    "WCAG",
+    "submittals"
   ],
   "ignorePaths": [
     "node_modules/**",

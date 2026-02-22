@@ -25,6 +25,7 @@ const headerFile = import.meta.glob('./content/header.md', {
 let headerData = {};
 let projectsList = [];
 let postsList = [];
+let activeTag = 'All';
 
 async function loadContent() {
   document.title = siteConfig.siteTitle || 'Portfolio';
@@ -194,51 +195,111 @@ const ProjectsSection = (projects) => `
   </section>
 `;
 
-const BlogListSection = (posts) => `
-  <section class="animate-fade-in mb-16 max-w-3xl mx-auto">
-    <div class="space-y-4">
-      ${posts
-        .map((post) => {
-          const url = post.externalUrl
-            ? post.externalUrl
-            : '/post/' + post.slug;
-          const target = post.externalUrl
-            ? 'target="_blank" rel="noopener noreferrer"'
-            : '';
-          const externalIcon = post.externalUrl
-            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
-            : '';
-          const dateStr = post.date
-            ? new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })
-            : '';
-          const dateHtml = dateStr
-            ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>`
-            : '';
-          const innerContent = `
-    ${dateHtml}
-    <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
-      ${post.title}
-      ${externalIcon}
-    </h4>
-    ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
-  `;
+const BlogListSection = (posts) => {
+  // Extract all unique tags
+  const allTags = new Set();
+  posts.forEach((post) => {
+    if (post.tags && Array.isArray(post.tags)) {
+      post.tags.forEach((tag) => allTags.add(tag));
+    }
+  });
 
-          return `
-        <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
-          <a href="${url}" ${target} class="block focus:outline-none">
-            ${innerContent}
-          </a>
-        </article>
-        `;
-        })
-        .join('')}
-    </div>
-  </section>
+  // Sort tags alphabetically
+  const uniqueTags = ['All', ...Array.from(allTags).sort()];
+
+  // Filter posts based on activeTag
+  const filteredPosts =
+    activeTag === 'All'
+      ? posts
+      : posts.filter((post) => post.tags && post.tags.includes(activeTag));
+
+  // Render tag filter buttons
+  const tagButtons = uniqueTags
+    .map(
+      (tag) => `
+    <button data-tag="${tag}" class="tag-filter-btn px-4 py-1.5 md:px-3 md:py-2 rounded-full md:rounded-lg text-sm font-medium transition-colors whitespace-nowrap text-left md:w-full ${
+      activeTag === tag
+        ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+    }">
+      ${tag === 'All' ? 'All Posts' : '#' + tag}
+    </button>
+  `
+    )
+    .join('');
+
+  return `
+  <section class="animate-fade-in mb-16 relative w-full max-w-3xl mx-auto">
+      
+      <!-- Sidebar for Tags (Absolute on Desktop to float in negative margin) -->
+      <aside class="w-full md:absolute md:w-32 lg:w-40 md:-left-40 md:top-0 lg:-left-48 shrink-0 mb-8 md:mb-0">
+        <div class="md:sticky md:top-12">
+          <h3 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 hidden md:block px-3">Topics</h3>
+          <!-- Mobile horizontal scroll, Desktop vertical stack -->
+          <div class="flex flex-row md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 border-b border-gray-100 dark:border-gray-800/60 md:border-b-0">
+            ${tagButtons}
+          </div>
+        </div>
+      </aside>
+
+      <!-- Posts List -->
+      <div class="space-y-4">
+        ${
+          filteredPosts.length > 0
+            ? filteredPosts
+                .map((post) => {
+                  const url = post.externalUrl
+                    ? post.externalUrl
+                    : '/post/' + post.slug;
+                  const target = post.externalUrl
+                    ? 'target="_blank" rel="noopener noreferrer"'
+                    : '';
+                  const externalIcon = post.externalUrl
+                    ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
+                    : '';
+                  const dateStr = post.date
+                    ? new Date(post.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                    : '';
+                  const dateHtml = dateStr
+                    ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>`
+                    : '';
+
+                  const tagsHtml =
+                    post.tags && post.tags.length > 0
+                      ? `<div class="mt-3 flex gap-2 flex-wrap">
+              ${post.tags.map((t) => `<span class="text-xs font-medium text-gray-400 dark:text-gray-500">#${t}</span>`).join('')}
+             </div>`
+                      : '';
+
+                  const innerContent = `
+  ${dateHtml}
+  <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+    ${post.title}
+    ${externalIcon}
+  </h4>
+  ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
+  ${tagsHtml}
 `;
+
+                  return `
+      <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
+        <a href="${url}" ${target} class="block focus:outline-none">
+          ${innerContent}
+        </a>
+      </article>
+      `;
+                })
+                .join('')
+            : `<div class="text-center py-12 text-gray-500 dark:text-gray-400">No posts found with the tag "#${activeTag}".</div>`
+        }
+      </div>
+  </section>
+  `;
+};
 
 const PostView = (post) => `
   <article class="animate-fade-in max-w-3xl mx-auto">
@@ -282,7 +343,7 @@ const Footer = (config) => `
         .join('')}
     </div>
   </footer>
-`;
+  `;
 
 // ----------------------------------------------------
 // Router
@@ -334,7 +395,7 @@ async function render() {
     ${NavTabs(path)}
     ${content}
     ${Footer(siteConfig)}
-  `;
+`;
   updateThemeIcon();
 
   if (!path.startsWith('/post/')) {
@@ -370,6 +431,12 @@ document.addEventListener('click', (e) => {
       localStorage.setItem('theme', 'dark');
     }
     updateThemeIcon();
+  }
+
+  const tagBtn = e.target.closest('.tag-filter-btn');
+  if (tagBtn) {
+    activeTag = tagBtn.getAttribute('data-tag');
+    render(); // Re-render the UI with the updated filter
   }
 });
 

@@ -37,7 +37,23 @@ async function loadContent() {
     const slug = path.split('/').pop().replace(/\.md$/, '');
     postsList.push({ slug, ...parsedPost.attributes, content: parsedPost.body });
   }
-  postsList.sort((a, b) => new Date(b.date) - new Date(a.date));
+  postsList.sort((a, b) => {
+    // Both have dates - chronological
+    if (a.date && b.date) {
+      return new Date(b.date) - new Date(a.date);
+    }
+
+    // Fallback: handle placement flags if mixed
+    if (a.placement && !b.placement) {
+      return a.placement === 'before' ? -1 : 1;
+    }
+    if (!a.placement && b.placement) {
+      return b.placement === 'before' ? 1 : -1;
+    }
+
+    // Default to order property if no dates
+    return (a.order || 0) - (b.order || 0);
+  });
 }
 
 // ----------------------------------------------------
@@ -102,39 +118,58 @@ const HomeView = (headerData) => `
 `;
 
 const ProjectsSection = (projects) => `
-  <section class="animate-fade-in mb-16 max-w-3xl">
-    <ul class="space-y-8">
-      ${projects.map((p) => `
-        <li class="group">
-          <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">${p.title}</h4>
+  <section class="animate-fade-in mb-16 max-w-3xl mx-auto">
+    <ul class="space-y-4">
+      ${projects.map((p) => {
+  const externalIcon = p.url ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>' : '';
+  const innerContent = `
+          <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+            ${p.title}${externalIcon}
+          </h4>
           <div class="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed prose prose-gray prose-p:my-0 max-w-none dark:prose-invert">
             ${marked.parse(p.content.trim())}
           </div>
+        `;
+
+  return p.url ? `
+        <li class="group block p-4 -mx-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
+          <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="block focus:outline-none">
+            ${innerContent}
+          </a>
         </li>
-      `).join('')}
+        ` : `
+        <li class="group block p-4 -mx-4">
+          ${innerContent}
+        </li>
+        `;
+}).join('')}
     </ul>
   </section>
 `;
 
 const BlogListSection = (posts) => `
-  <section class="animate-fade-in mb-16 max-w-3xl">
-    <div class="space-y-10">
+  <section class="animate-fade-in mb-16 max-w-3xl mx-auto">
+    <div class="space-y-4">
       ${posts.map((post) => {
   const url = post.externalUrl ? post.externalUrl : '/post/' + post.slug;
   const target = post.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
   const externalIcon = post.externalUrl ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>' : '';
-  const dateStr = new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  const dateStr = post.date ? new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+  const dateHtml = dateStr ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>` : '';
+  const innerContent = `
+    ${dateHtml}
+    <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+      ${post.title}
+      ${externalIcon}
+    </h4>
+    ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
+  `;
 
   return `
-        <article class="group relative">
-          <time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>
-          <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:underline underline-offset-4 decoration-gray-300 dark:decoration-gray-700 transition-all">
-            <a href="${url}" ${target} class="focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 rounded before:absolute before:inset-0 text-gray-900 dark:text-gray-100">
-              ${post.title}
-              ${externalIcon}
-            </a>
-          </h4>
-          <p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>
+        <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
+          <a href="${url}" ${target} class="block focus:outline-none">
+            ${innerContent}
+          </a>
         </article>
         `;
 }).join('')}
@@ -143,7 +178,7 @@ const BlogListSection = (posts) => `
 `;
 
 const PostView = (post) => `
-  <article class="animate-fade-in max-w-3xl">
+  <article class="animate-fade-in max-w-3xl mx-auto">
     <a href="/writing" class="inline-flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-8 items-center gap-2">
       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       Back to Writing

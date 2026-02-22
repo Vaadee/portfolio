@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <!-- 
+      This script solves the GitHub Pages client-side routing problem.
+      It takes the current URL path and query, and redirects back to the index page
+      while passing the route as a query parameter (?p=/your/route)
+    -->
+    <script type="text/javascript">
+        var pathSegmentsToKeep = 1; // 1 for '/portfolio/', 0 for root domains
+        var l = window.location;
+
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?p=/' +
+            l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

@@ -1,15 +1,26 @@
 import './style.css';
 import { marked } from 'marked';
 import markedAlert from 'marked-alert';
+import markedFootnote from 'marked-footnote';
 
 marked.use(markedAlert());
+marked.use(markedFootnote());
 
 import fm from 'front-matter';
 import siteConfig from './content/site.json';
 
-const postFiles = import.meta.glob('./posts/*.md', { query: '?raw', import: 'default' });
-const projectFiles = import.meta.glob('./content/projects/*.md', { query: '?raw', import: 'default' });
-const headerFile = import.meta.glob('./content/header.md', { query: '?raw', import: 'default' });
+const postFiles = import.meta.glob('./posts/*.md', {
+  query: '?raw',
+  import: 'default',
+});
+const projectFiles = import.meta.glob('./content/projects/*.md', {
+  query: '?raw',
+  import: 'default',
+});
+const headerFile = import.meta.glob('./content/header.md', {
+  query: '?raw',
+  import: 'default',
+});
 
 let headerData = {};
 let projectsList = [];
@@ -26,7 +37,10 @@ async function loadContent() {
   for (const path in projectFiles) {
     const rawProject = await projectFiles[path]();
     const parsedProject = fm(rawProject);
-    projectsList.push({ ...parsedProject.attributes, content: parsedProject.body });
+    projectsList.push({
+      ...parsedProject.attributes,
+      content: parsedProject.body,
+    });
   }
   projectsList.sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -35,7 +49,11 @@ async function loadContent() {
     const rawPost = await postFiles[path]();
     const parsedPost = fm(rawPost);
     const slug = path.split('/').pop().replace(/\.md$/, '');
-    postsList.push({ slug, ...parsedPost.attributes, content: parsedPost.body });
+    postsList.push({
+      slug,
+      ...parsedPost.attributes,
+      content: parsedPost.body,
+    });
   }
   postsList.sort((a, b) => {
     // Both have dates - chronological
@@ -62,6 +80,22 @@ async function loadContent() {
 
 // Resolves absolute paths safely against Vite's BASE_URL (needed for GitHub Pages)
 const getPath = (p) => import.meta.env.BASE_URL + p.replace(/^\//, '');
+
+// Ensure Markdown images respect the Vite BASE_URL for GitHub Pages
+const renderer = new marked.Renderer();
+renderer.image = function (href, title, text) {
+  // Try to use parsed object properties if they exist, fallback to raw arguments
+  const actualHref = href && href.href ? href.href : href;
+  const actualTitle = href && href.title ? href.title : title;
+  const actualText = href && href.text ? href.text : text;
+
+  // If the image path is absolute, prepend it with our Vite BASE_URL
+  const finalHref =
+    actualHref && actualHref.startsWith('/') ? getPath(actualHref) : actualHref;
+
+  return `<img src="${finalHref}" alt="${actualText || ''}" title="${actualTitle || ''}" class="rounded-lg shadow-sm w-full h-auto mt-6 mb-8" loading="lazy" />`;
+};
+marked.use({ renderer });
 
 const NavTabs = (currentPath) => `
   <div class="mb-12 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center w-full">
@@ -106,14 +140,18 @@ const HomeView = (headerData) => `
       <div class="w-full md:w-1/3 shrink-0 flex justify-center md:justify-end">
         <!-- Placeholder for caricature -->
         <div class="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gray-50 dark:bg-gray-800/40 flex items-center justify-center text-gray-400 dark:text-gray-500 overflow-hidden border border-gray-100 dark:border-gray-800 backdrop-blur-sm transition-all hover:shadow-sm">
-          ${siteConfig.profileImage ? `
+          ${
+            siteConfig.profileImage
+              ? `
             <img src="${getPath(siteConfig.profileImage)}" alt="Profile/Caricature" class="w-full h-full object-cover" />
-          ` : `
+          `
+              : `
             <div class="text-center p-4">
               <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
               <span class="text-xs uppercase tracking-widest font-medium block">Caricature</span>
             </div>
-          `}
+          `
+          }
         </div>
       </div>
     </div>
@@ -123,9 +161,12 @@ const HomeView = (headerData) => `
 const ProjectsSection = (projects) => `
   <section class="animate-fade-in mb-16 max-w-3xl mx-auto">
     <ul class="space-y-4">
-      ${projects.map((p) => {
-  const externalIcon = p.url ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>' : '';
-  const innerContent = `
+      ${projects
+        .map((p) => {
+          const externalIcon = p.url
+            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
+            : '';
+          const innerContent = `
           <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
             ${p.title}${externalIcon}
           </h4>
@@ -134,18 +175,21 @@ const ProjectsSection = (projects) => `
           </div>
         `;
 
-  return p.url ? `
+          return p.url
+            ? `
         <li class="group block p-4 -mx-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
           <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="block focus:outline-none">
             ${innerContent}
           </a>
         </li>
-        ` : `
+        `
+            : `
         <li class="group block p-4 -mx-4">
           ${innerContent}
         </li>
         `;
-}).join('')}
+        })
+        .join('')}
     </ul>
   </section>
 `;
@@ -153,13 +197,28 @@ const ProjectsSection = (projects) => `
 const BlogListSection = (posts) => `
   <section class="animate-fade-in mb-16 max-w-3xl mx-auto">
     <div class="space-y-4">
-      ${posts.map((post) => {
-  const url = post.externalUrl ? post.externalUrl : '/post/' + post.slug;
-  const target = post.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-  const externalIcon = post.externalUrl ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>' : '';
-  const dateStr = post.date ? new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-  const dateHtml = dateStr ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>` : '';
-  const innerContent = `
+      ${posts
+        .map((post) => {
+          const url = post.externalUrl
+            ? post.externalUrl
+            : '/post/' + post.slug;
+          const target = post.externalUrl
+            ? 'target="_blank" rel="noopener noreferrer"'
+            : '';
+          const externalIcon = post.externalUrl
+            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
+            : '';
+          const dateStr = post.date
+            ? new Date(post.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })
+            : '';
+          const dateHtml = dateStr
+            ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>`
+            : '';
+          const innerContent = `
     ${dateHtml}
     <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
       ${post.title}
@@ -168,14 +227,15 @@ const BlogListSection = (posts) => `
     ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
   `;
 
-  return `
+          return `
         <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
           <a href="${url}" ${target} class="block focus:outline-none">
             ${innerContent}
           </a>
         </article>
         `;
-}).join('')}
+        })
+        .join('')}
     </div>
   </section>
 `;
@@ -210,12 +270,16 @@ const Footer = (config) => `
   <footer class="mt-auto border-t border-gray-200 dark:border-gray-800 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-400">
     <p>&copy; ${new Date().getFullYear()} ${config.authorName || 'Author'}. All rights reserved.</p>
     <div class="flex space-x-6 mt-4 md:mt-0">
-      ${(config.socialLinks || []).map(link => `
+      ${(config.socialLinks || [])
+        .map(
+          (link) => `
         <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 dark:hover:text-gray-100 transition-colors">
           <span class="sr-only">${link.platform}</span>
           ${getSocialIcon(link.platform)}
         </a>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
   </footer>
 `;
@@ -246,7 +310,7 @@ async function render() {
     isContentLoaded = true;
   }
 
-  let content = '';
+  let content;
 
   if (path.startsWith('/post/')) {
     const slug = path.split('/post/')[1];
@@ -254,7 +318,8 @@ async function render() {
     if (post) {
       content = PostView(post);
     } else {
-      content = '<div class="text-center py-20 text-gray-500">Post not found.</div>';
+      content =
+        '<div class="text-center py-20 text-gray-500">Post not found.</div>';
     }
   } else if (path === '/projects') {
     content = ProjectsSection(projectsList);
@@ -285,7 +350,7 @@ window.navigateTo = (url) => {
 
 window.addEventListener('popstate', render);
 
-document.addEventListener('click', e => {
+document.addEventListener('click', (e) => {
   const link = e.target.closest('a');
   if (link && link.getAttribute('href') && !link.getAttribute('target')) {
     const href = link.getAttribute('href');
@@ -310,7 +375,9 @@ document.addEventListener('click', e => {
 
 function updateThemeIcon() {
   const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-  const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+  const themeToggleLightIcon = document.getElementById(
+    'theme-toggle-light-icon'
+  );
 
   if (!themeToggleDarkIcon || !themeToggleLightIcon) return;
 

@@ -113,7 +113,7 @@ const NavTabs = (currentPath) => `
         </li>
       </ul>
     </nav>
-    <button id="theme-toggle"
+    <button type="button" id="theme-toggle"
       class="p-2 -mt-4 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400"
       aria-label="Toggle Dark Mode">
       <svg id="theme-toggle-light-icon" aria-hidden="true" class="hidden w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
@@ -165,12 +165,12 @@ const ProjectsSection = (projects) => `
       ${projects
         .map((p) => {
           const externalIcon = p.url
-            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
+            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
             : '';
           const innerContent = `
-          <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
             ${p.title}${externalIcon}
-          </h4>
+          </h3>
           <div class="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed prose prose-gray prose-p:my-0 max-w-none dark:prose-invert">
             ${marked.parse(p.content.trim())}
           </div>
@@ -178,7 +178,7 @@ const ProjectsSection = (projects) => `
 
           return p.url
             ? `
-        <li class="group block p-4 -mx-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
+        <li class="group block p-4 -mx-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-400 dark:focus-within:ring-gray-600">
           <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="block focus:outline-none">
             ${innerContent}
           </a>
@@ -217,7 +217,7 @@ const BlogListSection = (posts) => {
   const tagButtons = uniqueTags
     .map(
       (tag) => `
-    <button data-tag="${tag}" class="tag-filter-btn px-4 py-1.5 md:px-3 md:py-2 rounded-full md:rounded-lg text-sm font-medium transition-colors whitespace-nowrap text-left md:w-full ${
+    <button type="button" data-tag="${tag}" aria-pressed="${activeTag === tag}" class="tag-filter-btn px-4 py-1.5 xl:px-3 xl:py-2 rounded-full xl:rounded-lg text-sm font-medium transition-colors whitespace-nowrap text-left xl:w-full ${
       activeTag === tag
         ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
         : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
@@ -232,11 +232,11 @@ const BlogListSection = (posts) => {
   <section class="animate-fade-in mb-16 relative w-full max-w-3xl mx-auto">
       
       <!-- Sidebar for Tags (Absolute on Desktop to float in negative margin) -->
-      <aside class="w-full md:absolute md:w-32 lg:w-40 md:-left-40 md:top-0 lg:-left-48 shrink-0 mb-8 md:mb-0">
-        <div class="md:sticky md:top-12">
-          <h3 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 hidden md:block px-3">Topics</h3>
+      <aside class="w-full xl:absolute xl:w-40 xl:-left-48 xl:top-0 shrink-0 mb-8 xl:mb-0">
+        <div class="xl:sticky xl:top-12">
+          <h3 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4 hidden xl:block px-3">Topics</h3>
           <!-- Mobile horizontal scroll, Desktop vertical stack -->
-          <div class="flex flex-row md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 border-b border-gray-100 dark:border-gray-800/60 md:border-b-0">
+          <div class="flex flex-row xl:flex-col gap-2 overflow-x-auto pb-4 xl:pb-0 scrollbar-hide -mx-6 px-6 md:mx-auto xl:mx-0 xl:px-0 border-b border-gray-100 dark:border-gray-800/60 xl:border-b-0">
             ${tagButtons}
           </div>
         </div>
@@ -255,7 +255,7 @@ const BlogListSection = (posts) => {
                     ? 'target="_blank" rel="noopener noreferrer"'
                     : '';
                   const externalIcon = post.externalUrl
-                    ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>'
+                    ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
                     : '';
                   const dateStr = post.date
                     ? new Date(post.date).toLocaleDateString('en-US', {
@@ -264,8 +264,11 @@ const BlogListSection = (posts) => {
                         day: 'numeric',
                       })
                     : '';
+                  const dateTimeStr = post.date
+                    ? new Date(post.date).toISOString()
+                    : '';
                   const dateHtml = dateStr
-                    ? `<time class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>`
+                    ? `<time datetime="${dateTimeStr}" class="block text-sm text-gray-500 dark:text-gray-400 mb-2">${dateStr}</time>`
                     : '';
 
                   const tagsHtml =
@@ -277,16 +280,16 @@ const BlogListSection = (posts) => {
 
                   const innerContent = `
   ${dateHtml}
-  <h4 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+  <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
     ${post.title}
     ${externalIcon}
-  </h4>
+  </h3>
   ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
   ${tagsHtml}
 `;
 
                   return `
-      <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-300">
+      <article class="group relative block p-5 -mx-5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors focus-within:ring-2 focus-within:ring-gray-400 dark:focus-within:ring-gray-600">
         <a href="${url}" ${target} class="block focus:outline-none">
           ${innerContent}
         </a>
@@ -308,7 +311,7 @@ const PostView = (post) => `
       Back to Writing
     </a>
     <header class="mb-10">
-      <time class="block text-sm text-gray-500 dark:text-gray-400 mb-3">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
+      <time datetime="${new Date(post.date).toISOString()}" class="block text-sm text-gray-500 dark:text-gray-400 mb-3">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
       <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">${post.title}</h1>
     </header>
     <div class="prose prose-gray max-w-none">

@@ -9,6 +9,23 @@ marked.use(markedFootnote());
 import fm from 'front-matter';
 import siteConfig from './content/site.json';
 
+// Google Analytics Setup
+if (siteConfig.googleAnalyticsId) {
+  const script1 = document.createElement('script');
+  script1.async = true;
+  script1.src = `https://www.googletagmanager.com/gtag/js?id=${siteConfig.googleAnalyticsId}`;
+  document.head.insertBefore(script1, document.head.firstChild);
+
+  const script2 = document.createElement('script');
+  script2.innerHTML = `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${siteConfig.googleAnalyticsId}');
+  `;
+  document.head.insertBefore(script2, script1.nextSibling);
+}
+
 const postFiles = import.meta.glob('./posts/*.md', {
   query: '?raw',
   import: 'default',

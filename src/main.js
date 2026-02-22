@@ -60,18 +60,21 @@ async function loadContent() {
 // UI Components
 // ----------------------------------------------------
 
+// Resolves absolute paths safely against Vite's BASE_URL (needed for GitHub Pages)
+const getPath = (p) => import.meta.env.BASE_URL + p.replace(/^\//, '');
+
 const NavTabs = (currentPath) => `
   <div class="mb-12 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center w-full">
     <nav>
       <ul class="flex space-x-8 -mb-px text-sm font-medium text-gray-500 dark:text-gray-400">
         <li>
-          <a href="/" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/' ? 'aria-current="page"' : ''}>Home</a>
+          <a href="${getPath('/')}" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/' ? 'aria-current="page"' : ''}>Home</a>
         </li>
         <li>
-          <a href="/projects" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/projects' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/projects' ? 'aria-current="page"' : ''}>Projects</a>
+          <a href="${getPath('/projects')}" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/projects' ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/projects' ? 'aria-current="page"' : ''}>Projects</a>
         </li>
         <li>
-          <a href="/writing" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'aria-current="page"' : ''}>Writing</a>
+          <a href="${getPath('/writing')}" class="inline-block pb-4 px-1 border-b-2 ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'border-gray-900 text-gray-900 dark:border-gray-100 dark:text-gray-100' : 'border-transparent hover:text-gray-700 hover:border-gray-300 dark:hover:text-gray-300 dark:hover:border-gray-700'} transition-colors" ${currentPath === '/writing' || currentPath.startsWith('/post/') ? 'aria-current="page"' : ''}>Writing</a>
         </li>
       </ul>
     </nav>
@@ -104,7 +107,7 @@ const HomeView = (headerData) => `
         <!-- Placeholder for caricature -->
         <div class="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gray-50 dark:bg-gray-800/40 flex items-center justify-center text-gray-400 dark:text-gray-500 overflow-hidden border border-gray-100 dark:border-gray-800 backdrop-blur-sm transition-all hover:shadow-sm">
           ${siteConfig.profileImage ? `
-            <img src="${siteConfig.profileImage}" alt="Profile/Caricature" class="w-full h-full object-cover" />
+            <img src="${getPath(siteConfig.profileImage)}" alt="Profile/Caricature" class="w-full h-full object-cover" />
           ` : `
             <div class="text-center p-4">
               <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -229,7 +232,14 @@ let isContentLoaded = false;
  */
 async function render() {
   const app = document.getElementById('app');
-  const path = window.location.pathname;
+  let rawPath = window.location.pathname;
+  let path = '/';
+
+  // Strip the configuration BASE_URL from the pathname to resolve internal components correctly
+  const base = import.meta.env.BASE_URL;
+  if (rawPath.startsWith(base)) {
+    path = '/' + rawPath.slice(base.length);
+  }
 
   if (!isContentLoaded) {
     await loadContent();
@@ -277,9 +287,12 @@ window.addEventListener('popstate', render);
 
 document.addEventListener('click', e => {
   const link = e.target.closest('a');
-  if (link && link.getAttribute('href') && link.getAttribute('href').startsWith('/') && !link.getAttribute('target')) {
-    e.preventDefault();
-    window.navigateTo(link.getAttribute('href'));
+  if (link && link.getAttribute('href') && !link.getAttribute('target')) {
+    const href = link.getAttribute('href');
+    if (href.startsWith(import.meta.env.BASE_URL)) {
+      e.preventDefault();
+      window.navigateTo(href);
+    }
   }
 
   const themeBtn = e.target.closest('#theme-toggle');

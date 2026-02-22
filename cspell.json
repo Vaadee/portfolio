@@ -1,0 +1,27 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "tailwindcss",
+    "vite",
+    "front-matter",
+    "pnpm",
+    "MLOps",
+    "Vaadeendra",
+    "vaadee",
+    "noopener",
+    "noreferrer",
+    "MLflow",
+    "Kubeflow",
+    "Hyperopt",
+    "hyperparameters",
+    "Metaflow"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "dist/**",
+    ".git/**",
+    "pnpm-lock.yaml",
+    "package.json"
+  ]
+}

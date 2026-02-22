@@ -10,7 +10,12 @@
     "Vaadeendra",
     "vaadee",
     "noopener",
-    "noreferrer"
+    "noreferrer",
+    "MLflow",
+    "Kubeflow",
+    "Hyperopt",
+    "hyperparameters",
+    "Metaflow"
   ],
   "ignorePaths": [
     "node_modules/**",

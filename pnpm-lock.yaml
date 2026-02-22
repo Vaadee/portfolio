@@ -23,6 +23,9 @@ importers:
       marked-alert:
         specifier: ^2.1.2
         version: 2.1.2(marked@17.0.3)
+      marked-footnote:
+        specifier: ^1.4.0
+        version: 1.4.0(marked@17.0.3)
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -1067,6 +1070,11 @@ packages:
 
   marked-alert@2.1.2:
     resolution: {integrity: sha512-EFNRZ08d8L/iEIPLTlQMDjvwIsj03gxWCczYTht6DCiHJIZhMk4NK5gtPY9UqAYb09eV5VGT+jD4lp396E0I+w==}
+    peerDependencies:
+      marked: '>=7.0.0'
+
+  marked-footnote@1.4.0:
+    resolution: {integrity: sha512-fZTxAhI1TcLEs5UOjCfYfTHpyKGaWQevbxaGTEA68B51l7i87SctPFtHETYqPkEN0ka5opvy4Dy1l/yXVC+hmg==}
     peerDependencies:
       marked: '>=7.0.0'
 
@@ -2279,6 +2287,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   marked-alert@2.1.2(marked@17.0.3):
+    dependencies:
+      marked: 17.0.3
+
+  marked-footnote@1.4.0(marked@17.0.3):
     dependencies:
       marked: 17.0.3
 

@@ -1,8 +1,10 @@
 import './style.css';
 import { marked } from 'marked';
 import markedAlert from 'marked-alert';
+import markedFootnote from 'marked-footnote';
 
 marked.use(markedAlert());
+marked.use(markedFootnote());
 
 import fm from 'front-matter';
 import siteConfig from './content/site.json';

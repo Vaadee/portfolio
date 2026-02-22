@@ -1,57 +1,71 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vaadeendra | ML Architect</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vaadeendra | ML Architect</title>
-
-  <!-- 
+    <!-- 
     This script solves the GitHub Pages client-side routing problem.
     It takes the redirected URL from 404.html and converts it back into 
     standard history paths before Vite loads the app.
   -->
-  <script type="text/javascript">
-    (function (l) {
-      if (l.search[1] === '=') {
-        var q = l.search.slice(1).split('&').reduce(function (a, v) {
-          var b = v.split('=');
-          a[b[0]] = b.slice(1).join('=').replace(/~and~/g, '&');
-          return a;
-        }, {});
-        if (q.p !== undefined) {
-          window.history.replaceState(null, null,
-            l.pathname.slice(0, -1) + (q.p || '') +
-            (q.q ? ('?' + q.q) : '') +
-            l.hash
-          );
+    <script type="text/javascript">
+      (function (l) {
+        if (l.search[1] === '=') {
+          var q = l.search
+            .slice(1)
+            .split('&')
+            .reduce(function (a, v) {
+              var b = v.split('=');
+              a[b[0]] = b.slice(1).join('=').replace(/~and~/g, '&');
+              return a;
+            }, {});
+          if (q.p !== undefined) {
+            window.history.replaceState(
+              null,
+              null,
+              l.pathname.slice(0, -1) +
+                (q.p || '') +
+                (q.q ? '?' + q.q : '') +
+                l.hash
+            );
+          }
         }
+      })(window.location);
+    </script>
+    <!-- Preconnect to Google Fonts for Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      if (
+        localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches)
+      ) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
-    }(window.location))
-  </script>
-  <!-- Preconnect to Google Fonts for Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-  </script>
-</head>
+    </script>
+  </head>
 
-<body>
-  <div class="max-w-5xl mx-auto px-6 py-12 md:py-16 min-h-screen flex flex-col w-full">
-    <!-- Main Content Container controlled by JS routing -->
-    <main id="app" class="flex-1 flex flex-col w-full"></main>
-  </div>
+  <body>
+    <div
+      class="max-w-5xl mx-auto px-6 py-12 md:py-16 min-h-screen flex flex-col w-full"
+    >
+      <!-- Main Content Container controlled by JS routing -->
+      <main id="app" class="flex-1 flex flex-col w-full"></main>
+    </div>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-  <script type="module" src="/src/main.js"></script>
-</body>
-
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

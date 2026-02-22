@@ -18,7 +18,10 @@
     "Metaflow",
     "Turnpoint",
     "WCAG",
-    "submittals"
+    "submittals",
+    "Hotjar",
+    "Disqus",
+    "fetchPriority"
   ],
   "ignorePaths": [
     "node_modules/**",

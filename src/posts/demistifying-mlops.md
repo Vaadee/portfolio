@@ -1,6 +1,8 @@
 ---
 title: Demystifying MLOps
 excerpt: This blog post takes a closer look at the various MLOps tools and techniques that can aid you in accelerating your workflows, especially when working on a small-scale project.
+date: 2023-06-18
+placement: after
 tags: [mlops, machine-learning, tech-notes]
 ---
 

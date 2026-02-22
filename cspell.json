@@ -15,7 +15,8 @@
     "Kubeflow",
     "Hyperopt",
     "hyperparameters",
-    "Metaflow"
+    "Metaflow",
+    "Turnpoint"
   ],
   "ignorePaths": [
     "node_modules/**",

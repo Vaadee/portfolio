@@ -1,12 +1,10 @@
 ---
 title: Demystifying MLOps
-excerpt: This blog post takes a closer look at the various MLOps tools and techniques that can aid you in accelerating your workflows, especially when working on a small-scale project.
+excerpt: Unlock the Potential of Your Machine Learning Development Lifecycle
 date: 2023-06-18
 placement: after
-tags: [mlops, machine-learning, tech-notes]
+tags: [mlops, machine-learning]
 ---
-
-# Demystifying MLOps: Unlock the Potential of Your Machine Learning Development Lifecycle [^1]
 
 ## MLOps: An Introduction [^2]
 

@@ -84,6 +84,13 @@ export const BlogListSection = (posts, activeTag, visiblePostsCount) => {
              </div>`
                       : '';
 
+                  const actionText = `
+  <div class="mt-4 flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-300 transition-colors">
+    ${post.externalUrl ? 'Read external article' : 'Read article'}
+    <svg class="ml-1.5 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+  </div>
+`;
+
                   const innerContent = `
   ${dateHtml}
   <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
@@ -92,6 +99,7 @@ export const BlogListSection = (posts, activeTag, visiblePostsCount) => {
   </h3>
   ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
   ${tagsHtml}
+  ${actionText}
 `;
 
                   return `

@@ -183,8 +183,18 @@ const ProjectsSection = (projects) => `
       ${projects
         .map((p) => {
           const externalIcon = p.url
-            ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
+            ? '<svg class="inline-block w-4 h-4 ml-1.5 -mt-1 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
             : '';
+
+          const actionText = p.url
+            ? `
+          <div class="mt-4 flex items-center text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+            View project
+            <svg class="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </div>
+            `
+            : '';
+
           const innerContent = `
           <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
             ${p.title}${externalIcon}
@@ -192,6 +202,7 @@ const ProjectsSection = (projects) => `
           <div class="mt-2 text-gray-600 dark:text-gray-400 leading-relaxed prose prose-gray prose-p:my-0 max-w-none dark:prose-invert">
             ${marked.parse(p.content.trim())}
           </div>
+          ${actionText}
         `;
 
           return p.url
@@ -274,7 +285,7 @@ const BlogListSection = (posts) => {
                     ? 'target="_blank" rel="noopener noreferrer"'
                     : '';
                   const externalIcon = post.externalUrl
-                    ? '<svg class="inline-block w-4 h-4 ml-1 -mt-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
+                    ? '<svg class="inline-block w-4 h-4 ml-1.5 -mt-1 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg><span class="sr-only">(opens in a new tab)</span>'
                     : '';
                   const dateStr = post.date
                     ? new Date(post.date).toLocaleDateString('en-US', {
@@ -297,14 +308,22 @@ const BlogListSection = (posts) => {
              </div>`
                       : '';
 
+                  const actionText = `
+  <div class="mt-4 flex items-center text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
+    ${post.externalUrl ? 'Read external article' : 'Read article'}
+    <svg class="ml-1.5 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+  </div>
+`;
+
                   const innerContent = `
   ${dateHtml}
-  <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">
+  <h3 class="text-xl font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">
     ${post.title}
     ${externalIcon}
   </h3>
   ${post.excerpt ? `<p class="text-gray-600 dark:text-gray-400 mt-3 leading-relaxed">${post.excerpt}</p>` : ''}
   ${tagsHtml}
+  ${actionText}
 `;
 
                   return `

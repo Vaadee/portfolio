@@ -1,4 +1,5 @@
-import { marked } from '../lib/markdown.js';
+import { marked, getPath, slugify } from '../lib/markdown.js';
+import { siteConfig } from '../lib/data.js';
 
 export const BlogListSection = (posts, activeTag, visiblePostsCount) => {
   // Extract all unique tags
@@ -130,18 +131,77 @@ export const BlogListSection = (posts, activeTag, visiblePostsCount) => {
   `;
 };
 
-export const PostView = (post) => `
-  <article class="animate-fade-in max-w-3xl mx-auto">
-    <a href="/writing" class="inline-flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-8 items-center gap-2">
-      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-      Back to Writing
-    </a>
-    <header class="mb-10">
-      <time datetime="${new Date(post.date).toISOString()}" class="block text-sm text-gray-500 dark:text-gray-400 mb-3">${new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</time>
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">${post.title}</h1>
-    </header>
-    <div class="prose prose-gray max-w-none">
-      ${marked.parse(post.content)}
+export const PostView = (post) => {
+  const headings = [];
+  const regex = /^(#{2,3})\s+(.+)$/gm;
+  let match;
+  while ((match = regex.exec(post.content)) !== null) {
+    const level = match[1].length;
+    let textStr = match[2];
+    const originalTextStr = textStr;
+    textStr = textStr.replace(/\[\^.*?\]/g, ''); // Fix escaping for footnote regex
+    textStr = textStr.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'); // Fix escaping for link regex
+    textStr = textStr.replace(/[*_`~]/g, ''); // Remove inline formatting
+    textStr = textStr.trim();
+
+    headings.push({
+      level,
+      text: textStr,
+      id: slugify(originalTextStr),
+    });
+  }
+
+  const tocHtml =
+    headings.length > 0
+      ? `
+    <aside class="hidden xl:block w-56 absolute h-full left-1/2 ml-[400px] top-0 pt-6 shrink-0 transition-opacity z-10">
+      <div class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide py-2">
+        <h4 class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">On this page</h4>
+        <nav class="flex flex-col gap-[0.35rem] toc-nav border-l border-gray-100 dark:border-gray-800/60 pl-4">
+          ${headings
+            .map(
+              (h) => `
+            <a href="#${h.id}" data-target="${h.id}" class="text-[13px] leading-snug text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors toc-link ${h.level === 3 ? 'ml-3' : ''}">
+              ${h.text}
+            </a>
+          `
+            )
+            .join('')}
+        </nav>
+      </div>
+    </aside>
+  `
+      : '';
+
+  const dateStr = new Date(post.date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const dateTimeStr = new Date(post.date).toISOString();
+  const authorName = siteConfig.authorName || 'Author';
+
+  return `
+  <article class="animate-fade-in relative lg:mx-auto">
+    <div class="max-w-3xl mx-auto w-full px-4 sm:px-0">
+      <a href="/writing" class="inline-flex text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-8 items-center gap-2">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to Writing
+      </a>
+      <header class="mb-10">
+        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3 gap-2">
+          <time datetime="${dateTimeStr}">${dateStr}</time>
+          <span>&middot;</span>
+          <span>${authorName}</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 mb-6">${post.title}</h1>
+        ${post.heroImage ? `<img src="${getPath(post.heroImage)}" alt="${post.title}" class="w-full h-auto rounded-2xl shadow-sm mb-8 object-cover aspect-[2/1] md:aspect-video" />` : ''}
+      </header>
+      <div class="prose prose-gray max-w-none">
+        ${marked.parse(post.content)}
+      </div>
     </div>
+    ${tocHtml}
   </article>
-`;
+  `;
+};

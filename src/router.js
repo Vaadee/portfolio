@@ -8,6 +8,61 @@ import { Footer } from './components/Footer.js';
 let isContentLoaded = false;
 let activeTag = 'All';
 let visiblePostsCount = 10;
+let scrollSpyTimeout;
+
+/**
+ * Updates the Table of Contents active link based on scroll position.
+ */
+function handleScrollSpy() {
+  if (!window.location.pathname.startsWith('/post/')) return;
+
+  if (scrollSpyTimeout) {
+    window.cancelAnimationFrame(scrollSpyTimeout);
+  }
+
+  scrollSpyTimeout = window.requestAnimationFrame(() => {
+    const headings = Array.from(
+      document.querySelectorAll('.prose h2, .prose h3')
+    );
+    const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+
+    if (!headings.length || !tocLinks.length) return;
+
+    let activeId = '';
+    // 120px offset to account for visual padding/header when scrolling down
+    const scrollPosition = window.scrollY + 120;
+
+    for (const h of headings) {
+      // offsetTop is relative to the document
+      const hTop = h.getBoundingClientRect().top + window.scrollY;
+      if (hTop <= scrollPosition) {
+        activeId = h.id;
+      } else {
+        break;
+      }
+    }
+
+    if (!activeId && headings.length > 0) activeId = headings[0].id;
+
+    tocLinks.forEach((link) => {
+      if (link.dataset.target === activeId) {
+        link.classList.add(
+          'text-gray-900',
+          'dark:text-gray-100',
+          'font-medium'
+        );
+        link.classList.remove('text-gray-500', 'dark:text-gray-400');
+      } else {
+        link.classList.add('text-gray-500', 'dark:text-gray-400');
+        link.classList.remove(
+          'text-gray-900',
+          'dark:text-gray-100',
+          'font-medium'
+        );
+      }
+    });
+  });
+}
 
 /**
  * Main application render function.
@@ -57,6 +112,24 @@ export async function render() {
 
   if (!path.startsWith('/post/')) {
     window.scrollTo(0, 0);
+  } else {
+    // Scroll to top or specific hash for posts
+    if (window.location.hash) {
+      setTimeout(() => {
+        const targetElement = document.getElementById(
+          window.location.hash.slice(1)
+        );
+        if (targetElement) {
+          const offsetTop =
+            targetElement.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: offsetTop, behavior: 'auto' });
+        }
+      }, 50);
+    } else {
+      window.scrollTo(0, 0);
+    }
+    // Initialize scroll spy
+    setTimeout(handleScrollSpy, 100);
   }
 }
 
@@ -76,6 +149,25 @@ export function initRouter() {
     const link = e.target.closest('a');
     if (link && link.getAttribute('href') && !link.getAttribute('target')) {
       const href = link.getAttribute('href');
+
+      // Handle internal TOC hash links
+      if (href.startsWith('#')) {
+        e.preventDefault();
+        const targetElement = document.getElementById(href.slice(1));
+        if (targetElement) {
+          const offsetTop =
+            targetElement.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+          window.history.pushState({}, '', window.location.pathname + href);
+          // Manually trigger scroll spy to feel instantly responsive
+          setTimeout(handleScrollSpy, 50);
+        }
+        return;
+      }
+
       if (href.startsWith(import.meta.env.BASE_URL)) {
         e.preventDefault();
         window.navigateTo(href);
@@ -107,6 +199,9 @@ export function initRouter() {
       render();
     }
   });
+
+  // Attach scroll listener for TOC spy
+  window.addEventListener('scroll', handleScrollSpy, { passive: true });
 
   // Initial render
   render();

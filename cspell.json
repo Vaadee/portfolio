@@ -22,7 +22,8 @@
     "Hotjar",
     "Disqus",
     "fetchPriority",
-    "QVVMDJXCV"
+    "QVVMDJXCV",
+    "middot"
   ],
   "ignorePaths": [
     "node_modules/**",
